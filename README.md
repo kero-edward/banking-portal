@@ -1,59 +1,96 @@
-# BankingPortal
+# Banking Portal
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.7.
+A responsive banking portal built with Angular for managing customers, accounts, and transactions.
 
-## Development server
+## Technologies
 
-To start a local development server, run:
+- Angular 22
+- TypeScript
+- RxJS
+- Angular Signals
+- Reactive Forms
+- PrimeNG
+- SCSS
+- Static JSON mock data
 
-```bash
-ng serve
-```
+## Features
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Authentication
 
-## Code scaffolding
+- Login screen with email and password validation.
+- Redirects to the dashboard after login.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Dashboard
 
-```bash
-ng generate component component-name
-```
+- Displays available customers.
+- Allows selecting a customer.
+- Provides access to customer details.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Customer Details
 
-```bash
-ng generate --help
-```
+- Displays customer information.
+- Displays the customer's accounts.
+- Shows account type, balance, currency, IBAN, and status.
 
-## Building
+### Transactions
 
-To build the project run:
+- View transactions for the selected account.
+- Filter transactions by date range, transaction type, and category.
+- Sort transactions by date and amount.
+- Paginate transaction results.
+- Create new Debit or Credit transactions.
+- Newly created transactions appear immediately.
+- Account balance is updated automatically.
 
-```bash
-ng build
-```
+### Transaction Validation
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- Transaction type is required.
+- Amount must be greater than 0.
+- Maximum transaction amount is 100,000.
+- Amount supports a maximum of 2 decimal places.
+- Transaction date cannot be in the future.
+- Merchant name must contain between 3 and 50 characters.
+- Category is required.
+- Debit transactions cannot exceed the available account balance.
 
-## Running unit tests
+### Additional Features
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- Mini statement showing the latest transactions.
+- CSV export for filtered transactions.
+- Transaction insights including:
+  - Total debit
+  - Total credit
+  - Highest spending category
+- Loading and error states.
+- Cached JSON data to avoid unnecessary HTTP requests.
+- Responsive layout for desktop, tablet, and mobile.
 
-```bash
-ng test
-```
+## Project Structure
 
-## Running end-to-end tests
+```text
+src/app/
+├── core/
+│   ├── models/
+│   │   ├── account.ts
+│   │   ├── customer.ts
+│   │   └── transaction.ts
+│   │
+│   └── services/
+│       ├── account.ts
+│       └── transaction.ts
+│
+├── components/
+│   ├── login/
+│   ├── dashboard/
+│   ├── customer-details/
+│   └── transactions/
+│       └── transaction-form/
+│
+└── app.routes.ts
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+public/assets/mock/
+├── customers.json
+├── accounts.json
+├── transactions.json
+├── transaction-types.json
+└── transaction-categories.json
