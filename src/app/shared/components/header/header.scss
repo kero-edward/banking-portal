@@ -1,0 +1,36 @@
+.header {
+  height: 64px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  border: none;
+  border-radius: 5%;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.avatar:hover {
+  opacity: 0.9;
+}

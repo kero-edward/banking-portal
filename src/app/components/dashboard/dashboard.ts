@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
+import { Header } from '../../shared/components/header/header';
 
 @Component({
-  imports: [],
+  imports: [Header],
   selector: 'app-dashboard',
   styleUrl: './dashboard.scss',
   templateUrl: './dashboard.html',
