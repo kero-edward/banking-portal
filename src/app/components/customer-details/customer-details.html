@@ -1,1 +1,82 @@
-<p>customer-details works!</p>
+<app-header title="Customer Details" />
+
+<main class="customer-details-page">
+  @if (customer(); as selectedCustomer) {
+  <section class="customer-section">
+    <h1>Customer Information</h1>
+
+    <div class="customer-info">
+      <div>
+        <span>Name</span>
+        <strong>{{ selectedCustomer.name }}</strong>
+      </div>
+
+      <div>
+        <span>CIF</span>
+        <strong>{{ selectedCustomer.CIF }}</strong>
+      </div>
+
+      <div>
+        <span>National ID</span>
+        <strong>{{ selectedCustomer.nationalId }}</strong>
+      </div>
+
+      <div>
+        <span>Segment</span>
+        <strong>{{ selectedCustomer.segment }}</strong>
+      </div>
+
+      <div>
+        <span>Email</span>
+        <strong>{{ selectedCustomer.email }}</strong>
+      </div>
+
+      <div>
+        <span>Phone</span>
+        <strong>{{ selectedCustomer.phone }}</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="accounts-section">
+    <h2>Accounts</h2>
+
+    @if (accounts().length > 0) {
+    <div class="account-list">
+      @for (account of accounts(); track account.id) {
+      <article class="account-card">
+        <div>
+          <span>Account Type</span>
+          <strong>{{ account.type }}</strong>
+        </div>
+
+        <div>
+          <span>IBAN</span>
+          <strong>{{ account.iban }}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>{{ account.status }}</strong>
+        </div>
+
+        <div class="balance">
+          <span>Balance</span>
+          <strong>
+            {{ account.balance | number: '1.2-2' }}
+            {{ account.currency }}
+          </strong>
+        </div>
+      </article>
+      }
+    </div>
+    } @else {
+    <p class="empty-state">No accounts found for this customer.</p>
+    }
+  </section>
+  } @else {
+  <section class="empty-state">
+    <h2>Customer not found</h2>
+  </section>
+  }
+</main>

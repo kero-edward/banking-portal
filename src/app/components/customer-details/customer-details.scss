@@ -1,0 +1,76 @@
+.customer-details-page {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  box-sizing: border-box;
+  background: #f5f7fa;
+}
+
+.customer-section,
+.accounts-section {
+  max-width: 1100px;
+  margin: 0 auto 24px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+h1,
+h2 {
+  margin-top: 0;
+}
+
+.customer-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.customer-info div,
+.account-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.customer-info span,
+.account-card span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.account-list {
+  display: grid;
+  gap: 12px;
+}
+
+.account-card {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr;
+  gap: 20px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.balance {
+  text-align: right;
+}
+
+.empty-state {
+  color: #6b7280;
+}
+
+@media (max-width: 700px) {
+  .customer-info {
+    grid-template-columns: 1fr;
+  }
+
+  .account-card {
+    grid-template-columns: 1fr;
+  }
+
+  .balance {
+    text-align: left;
+  }
+}

@@ -1,3 +1,30 @@
 <app-header title="Dashboard" />
 
-<p>dashboard works!</p>
+<main class="dashboard">
+  <section class="customers-section">
+    <div class="section-header">
+      <h1>Customers</h1>
+      <span>{{ customers().length }} customers</span>
+    </div>
+
+    <div class="customer-list">
+      @for (customer of customers(); track customer.CIF) {
+      <article class="customer-card">
+        <div class="customer-avatar">
+          {{ customer.name.charAt(0) }}
+        </div>
+
+        <div class="customer-info">
+          <strong>{{ customer.name }}</strong>
+          <span>CIF: {{ customer.CIF }}</span>
+          <span>{{ customer.segment }}</span>
+        </div>
+
+        <button type="button" class="details-button" [routerLink]="['/customer', customer.CIF]">
+          View Details
+        </button>
+      </article>
+      }
+    </div>
+  </section>
+</main>
