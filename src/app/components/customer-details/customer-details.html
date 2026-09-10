@@ -2,15 +2,10 @@
 
 <main class="customer-details-page">
   @if (customer(); as selectedCustomer) {
-  <section class="customer-section">
-    <h1>Customer Information</h1>
+  <section class="customer-card">
+    <h1>{{ selectedCustomer.name }}</h1>
 
     <div class="customer-info">
-      <div>
-        <span>Name</span>
-        <strong>{{ selectedCustomer.name }}</strong>
-      </div>
-
       <div>
         <span>CIF</span>
         <strong>{{ selectedCustomer.CIF }}</strong>
@@ -37,46 +32,47 @@
       </div>
     </div>
   </section>
+  }
 
   <section class="accounts-section">
-    <h2>Accounts</h2>
+    <div class="section-heading">
+      <h2>Customer Accounts</h2>
+    </div>
 
-    @if (accounts().length > 0) {
-    <div class="account-list">
+    @if (accountService.loading()) {
+    <p class="state-message">Loading accounts...</p>
+    }
+
+    @if (accountService.error()) {
+    <p class="state-message error">
+      {{ accountService.error() }}
+    </p>
+    }
+
+    @if (accounts().length === 0 && !accountService.loading()) {
+    <p class="state-message">No accounts found for this customer.</p>
+    }
+
+    <div class="accounts-grid">
       @for (account of accounts(); track account.id) {
       <article class="account-card">
-        <div>
-          <span>Account Type</span>
-          <strong>{{ account.type }}</strong>
+        <div class="account-card-header">
+          <span>{{ account.type }} Account</span>
+          <span>{{ account.status }}</span>
         </div>
 
-        <div>
-          <span>IBAN</span>
-          <strong>{{ account.iban }}</strong>
-        </div>
+        <h3>
+          {{ account.balance | number: '1.2-2' }}
+          {{ account.currency }}
+        </h3>
 
-        <div>
-          <span>Status</span>
-          <strong>{{ account.status }}</strong>
-        </div>
+        <p>{{ account.iban }}</p>
 
-        <div class="balance">
-          <span>Balance</span>
-          <strong>
-            {{ account.balance | number: '1.2-2' }}
-            {{ account.currency }}
-          </strong>
-        </div>
+        <button type="button" class="transactions-button" [routerLink]="['/transactions', account.id]">
+          Transactions
+        </button>
       </article>
       }
     </div>
-    } @else {
-    <p class="empty-state">No accounts found for this customer.</p>
-    }
   </section>
-  } @else {
-  <section class="empty-state">
-    <h2>Customer not found</h2>
-  </section>
-  }
 </main>

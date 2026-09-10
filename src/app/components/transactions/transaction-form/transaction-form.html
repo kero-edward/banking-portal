@@ -1,1 +1,118 @@
-<p>transaction-form works!</p>
+<div class="transaction-form">
+  <div class="form-header">
+    <div>
+      <h2>Create New Transaction</h2>
+      <p>
+        Current balance:
+        <strong>
+          {{ accountBalance | number: '1.2-2' }}
+        </strong>
+      </p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="form-grid">
+      <!-- Type -->
+      <div class="form-field">
+        <label for="type"> Transaction Type </label>
+
+        <select id="type" formControlName="type">
+          <option value="Debit">Debit</option>
+
+          <option value="Credit">Credit</option>
+        </select>
+
+        @if (form.controls.type.touched && form.controls.type.hasError('required')) {
+        <small class="error"> Transaction type is required. </small>
+        }
+      </div>
+
+      <!-- Amount -->
+      <div class="form-field">
+        <label for="amount"> Amount </label>
+
+        <input id="amount" type="number" min="0.01" max="100000" step="0.01" formControlName="amount"
+          placeholder="Enter amount" />
+
+        @if (form.controls.amount.touched && form.controls.amount.hasError('required')) {
+        <small class="error"> Amount is required. </small>
+        }
+
+        @if (form.controls.amount.touched && form.controls.amount.hasError('min')) {
+        <small class="error"> Amount must be greater than 0. </small>
+        }
+
+        @if (form.controls.amount.touched && form.controls.amount.hasError('max')) {
+        <small class="error"> Maximum amount is 100,000. </small>
+        }
+
+        @if (form.controls.amount.touched && form.controls.amount.hasError('maxTwoDecimals')) {
+        <small class="error"> Amount can have maximum 2 decimal places. </small>
+        }
+      </div>
+
+      <!-- Date -->
+      <div class="form-field">
+        <label for="date"> Date </label>
+
+        <input id="date" type="date" formControlName="date" />
+
+        @if (form.controls.date.touched && form.controls.date.hasError('required')) {
+        <small class="error"> Date is required. </small>
+        }
+
+        @if (form.controls.date.touched && form.controls.date.hasError('futureDate')) {
+        <small class="error"> Date cannot be in the future. </small>
+        }
+      </div>
+
+      <!-- Merchant -->
+      <div class="form-field">
+        <label for="merchant"> Merchant </label>
+
+        <input id="merchant" type="text" maxlength="50" formControlName="merchant" placeholder="Enter merchant" />
+
+        @if (form.controls.merchant.touched && form.controls.merchant.hasError('required')) {
+        <small class="error"> Merchant is required. </small>
+        }
+
+        @if (
+        form.controls.merchant.touched &&
+        (form.controls.merchant.hasError('minlength') ||
+        form.controls.merchant.hasError('maxlength'))
+        ) {
+        <small class="error"> Merchant must be between 3 and 50 characters. </small>
+        }
+      </div>
+
+      <!-- Category -->
+      <div class="form-field">
+        <label for="category"> Category </label>
+
+        <select id="category" formControlName="category">
+          <option value="">Select category</option>
+
+          @for (category of categories; track category) {
+          <option [value]="category">
+            {{ category }}
+          </option>
+          }
+        </select>
+
+        @if (form.controls.category.touched && form.controls.category.hasError('required')) {
+        <small class="error"> Category is required. </small>
+        }
+      </div>
+    </div>
+
+    <!-- Cross-field validation -->
+    @if (form.touched && form.hasError('insufficientBalance')) {
+    <div class="balance-error">Debit amount cannot exceed the current account balance.</div>
+    }
+
+    <div class="form-actions">
+      <button type="submit" class="submit-button">Create Transaction</button>
+    </div>
+  </form>
+</div>

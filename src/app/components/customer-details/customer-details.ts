@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, effect, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Customer } from '../../core/models/customer';
 import { Account } from '../../core/models/account';
@@ -8,18 +8,35 @@ import { AccountService } from '../../core/services/account';
 import { Header } from '../../shared/components/header/header';
 
 @Component({
-  imports: [Header, DecimalPipe],
+  imports: [Header, DecimalPipe, RouterLink],
   selector: 'app-customer-details',
   styleUrl: './customer-details.scss',
   templateUrl: './customer-details.html',
 })
 export class CustomerDetails {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly customerService = inject(CustomerService);
-  private readonly accountService = inject(AccountService);
+  readonly accountService = inject(AccountService);
 
   readonly customer = signal<Customer | null>(null);
   readonly accounts = signal<Account[]>([]);
+
+  constructor() {
+    effect(() => {
+      const customerId = this.route.snapshot.paramMap.get('id');
+
+      if (!customerId) {
+        return;
+      }
+
+      const accounts = this.accountService.accounts();
+
+      if (accounts.length > 0) {
+        this.accounts.set(accounts.filter((account) => account.customerId === customerId));
+      }
+    });
+  }
 
   ngOnInit(): void {
     const customerId = this.route.snapshot.paramMap.get('id');
@@ -29,7 +46,7 @@ export class CustomerDetails {
     }
 
     this.loadCustomer(customerId);
-    this.loadAccounts(customerId);
+    this.accountService.loadAccounts();
   }
 
   private loadCustomer(customerId: string): void {
@@ -41,18 +58,9 @@ export class CustomerDetails {
           this.customer.set(customer);
         }
       },
-      error: (error) => console.error('Failed to load customer', error),
-    });
-  }
-
-  private loadAccounts(customerId: string): void {
-    this.accountService.getAccounts().subscribe({
-      next: (accounts) => {
-        const customerAccounts = accounts.filter((account) => account.customerId === customerId);
-
-        this.accounts.set(customerAccounts);
+      error: (error) => {
+        console.error('Failed to load customer', error);
       },
-      error: (error) => console.error('Failed to load accounts', error),
     });
   }
 }

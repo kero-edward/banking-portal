@@ -1,1 +1,230 @@
-<p>transactions works!</p>
+<div class="transactions-page">
+  @if (accountService.loading()) {
+  <div class="state-message">Loading account...</div>
+  } @else if (accountService.error()) {
+  <div class="state-message error">
+    {{ accountService.error() }}
+  </div>
+  } @else if (account(); as selectedAccount) {
+  <header class="page-header">
+    <div>
+      <h1>Transactions</h1>
+      <p>
+        {{ selectedAccount.type }}
+        Account · {{ selectedAccount.currency }}
+      </p>
+    </div>
+
+    <button pButton type="button" label="Export CSV" icon="pi pi-download" (click)="exportCsv()"></button>
+  </header>
+
+  <section class="account-card">
+    <div>
+      <span>Account</span>
+      <strong>{{ selectedAccount.id }}</strong>
+    </div>
+
+    <div>
+      <span>IBAN</span>
+      <strong>{{ selectedAccount.iban }}</strong>
+    </div>
+
+    <div>
+      <span>Balance</span>
+      <strong>
+        {{ selectedAccount.balance | number: '1.2-2' }}
+        {{ selectedAccount.currency }}
+      </strong>
+    </div>
+
+    <div>
+      <span>Status</span>
+      <strong>{{ selectedAccount.status }}</strong>
+    </div>
+  </section>
+
+  <section class="filters-card">
+    <h2>Filter Transactions</h2>
+
+    <div class="filters">
+      <div class="filter-field">
+        <label>Transaction Type</label>
+
+        <p-select [options]="[
+              { label: 'All Types', value: '' },
+              { label: 'Debit', value: 'Debit' },
+              { label: 'Credit', value: 'Credit' },
+            ]" optionLabel="label" optionValue="value" [ngModel]="typeFilter()"
+          (ngModelChange)="typeFilter.set($event)" placeholder="All Types" styleClass="filter-control" />
+      </div>
+
+      <div class="filter-field">
+        <label>Category</label>
+
+        <p-select [options]="categories" [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event)"
+          placeholder="All Categories" [showClear]="true" styleClass="filter-control" />
+      </div>
+
+      <div class="filter-field">
+        <label>From Date</label>
+
+        <input type="date" [value]="fromDate()" (input)="fromDate.set($any($event.target).value)" />
+      </div>
+
+      <div class="filter-field">
+        <label>To Date</label>
+
+        <input type="date" [value]="toDate()" (input)="toDate.set($any($event.target).value)" />
+      </div>
+
+      <div class="filter-actions">
+        <button pButton type="button" label="Clear" severity="secondary" (click)="clearFilters()"></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <app-transaction-form [accountId]="selectedAccount.id" [accountBalance]="selectedAccount.balance"
+      (transactionCreated)="onTransactionCreated()" />
+  </section>
+
+  <section class="insights-grid">
+    <div class="insight-card">
+      <span>Total Debit</span>
+      <strong>
+        {{ monthlyInsights().totalDebit | number: '1.2-2' }}
+        {{ selectedAccount.currency }}
+      </strong>
+    </div>
+
+    <div class="insight-card">
+      <span>Total Credit</span>
+      <strong>
+        {{ monthlyInsights().totalCredit | number: '1.2-2' }}
+        {{ selectedAccount.currency }}
+      </strong>
+    </div>
+
+    <div class="insight-card">
+      <span>Highest Spending Category</span>
+      <strong>
+        {{ monthlyInsights().highestSpendingCategory }}
+      </strong>
+    </div>
+  </section>
+
+  <section class="mini-statement">
+    <h2>Mini Statement</h2>
+
+    <div class="mini-list">
+      @for (transaction of miniStatement(); track transaction.id) {
+      <div class="mini-item">
+        <div>
+          <strong>{{ transaction.merchant }}</strong>
+          <span>
+            {{ transaction.date }}
+            · {{ transaction.category }}
+          </span>
+        </div>
+
+        <strong [class.debit]="transaction.type === 'Debit'" [class.credit]="transaction.type === 'Credit'">
+          {{ transaction.type === 'Debit' ? '-' : '+' }}
+          {{ transaction.amount | number: '1.2-2' }}
+          {{ selectedAccount.currency }}
+        </strong>
+      </div>
+      } @empty {
+      <p>No transactions available.</p>
+      }
+    </div>
+  </section>
+
+  <section class="transactions-table">
+    <div class="section-header">
+      <div>
+        <h2>Transaction History</h2>
+        <span> {{ filteredTransactions().length }} transactions </span>
+      </div>
+    </div>
+
+    @if (transactionService.loading()) {
+    <div class="state-message">Loading transactions...</div>
+    } @else if (transactionService.error()) {
+    <div class="state-message error">
+      {{ transactionService.error() }}
+    </div>
+    } @else {
+    <p-table [value]="filteredTransactions()" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 20]"
+      sortMode="single" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="date">
+            Date
+            <p-sortIcon field="date"></p-sortIcon>
+          </th>
+
+          <th pSortableColumn="type">
+            Type
+            <p-sortIcon field="type"></p-sortIcon>
+          </th>
+
+          <th pSortableColumn="merchant">
+            Merchant
+            <p-sortIcon field="merchant"></p-sortIcon>
+          </th>
+
+          <th pSortableColumn="category">
+            Category
+            <p-sortIcon field="category"></p-sortIcon>
+          </th>
+
+          <th pSortableColumn="amount">
+            Amount
+            <p-sortIcon field="amount"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-transaction>
+        <tr>
+          <td>
+            {{ transaction.date }}
+          </td>
+
+          <td>
+            <span class="transaction-type" [class.debit]="transaction.type === 'Debit'"
+              [class.credit]="transaction.type === 'Credit'">
+              {{ transaction.type }}
+            </span>
+          </td>
+
+          <td>
+            {{ transaction.merchant }}
+          </td>
+
+          <td>
+            {{ transaction.category }}
+          </td>
+
+          <td>
+            <strong>
+              {{ transaction.type === 'Debit' ? '-' : '+' }}
+              {{ transaction.amount | number: '1.2-2' }}
+              {{ selectedAccount.currency }}
+            </strong>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5">No transactions found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    }
+  </section>
+  } @else {
+  <div class="state-message">Account not found.</div>
+  }
+</div>
